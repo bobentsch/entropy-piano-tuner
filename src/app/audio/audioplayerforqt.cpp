@@ -36,7 +36,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 AudioPlayerForQt::AudioPlayerForQt(QObject *parent)
-    : AudioInterfaceForQt(QAudio::AudioOutput, parent)
+    : AudioInterfaceForQt(QAudioDevice::Output, parent)
     , mAudioSink(nullptr)
 {
 }
@@ -53,14 +53,14 @@ AudioPlayerForQt::AudioPlayerForQt(QObject *parent)
 /// audio device is instantiated and started.
 ///////////////////////////////////////////////////////////////////////////////
 
-QAudio::Error AudioPlayerForQt::createDevice(const QAudioFormat &format, int bufferSizeMS)
+QAudio::Error AudioPlayerForQt::createDevice(const QAudioFormat &format, const QAudioDevice&info, int bufferSizeMS)
 {
     // Open the audio output stream
-    mAudioSink = new QAudioOutput(format);
+    mAudioSink = new QAudioSink(info, format);
     QObject::connect(mAudioSink, SIGNAL(stateChanged(QAudio::State)), this, SLOT(stateChanged(QAudio::State)));
     if (mAudioSink->error() != QAudio::NoError)
     {
-        LogE("Error opening QAudioOutput with error %d", mAudioSink->error());
+        LogE("Error opening QAudioOutput with error %d", static_cast<int>(mAudioSink->error()));
         return mAudioSink->error();
     }
 
@@ -72,7 +72,7 @@ QAudio::Error AudioPlayerForQt::createDevice(const QAudioFormat &format, int buf
     const int bufferSize = format.bytesForDuration(bufferSizeMS * 1000);
     mAudioSink->setBufferSize(bufferSize);
     if (mAudioSink->error() != QAudio::NoError) {
-        LogE("Error opening QAudioOutput with error %d", mAudioSink->error());
+        LogE("Error opening QAudioOutput with error %d", static_cast<int>(mAudioSink->error()));
         return mAudioSink->error();
     }
 
@@ -107,7 +107,7 @@ void AudioPlayerForQt::exit()
 
 void AudioPlayerForQt::start()
 {
-    LogI("Start Qt audio device")
+    LogI("Start Qt audio device");
     if (not mAudioSink)
     {
         LogI("Audio device was not created and thus cannot be started.");

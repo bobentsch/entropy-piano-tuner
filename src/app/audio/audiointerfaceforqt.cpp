@@ -76,7 +76,7 @@ void AudioInterfaceForQt::reinitialize(int samplingRate, int channelCount, const
 
     QAudio::Error err = createDevice(mFormat, device, bufferSizeMS);
     if (err != QAudio::NoError) {
-        LogE("Error creating audio device with error %d", err);
+        LogE("Error creating audio device with error %d", static_cast<int>(err));
         return;
     }
 
@@ -103,7 +103,12 @@ void AudioInterfaceForQt::init()
             mDevice = QMediaDevices::defaultAudioOutput();
         }
     } else {
-        QList<QAudioDevice> devices = QMediaDevices::availableDevices(mMode);
+        QList<QAudioDevice> devices;
+        if(mMode == QAudioDevice::Mode::Input) {
+            devices = QMediaDevices::audioInputs();
+        } else {
+            devices = QMediaDevices::audioOutputs();
+        }
         for (QAudioDevice& d: devices) {
             if (d.description() == deviceName) {
                 mDevice = d;
@@ -133,12 +138,12 @@ void AudioInterfaceForQt::init()
     int bufferSize = s.value(mSettingsPrefix + "buffersize", QVariant::fromValue(DEFAULT_BUFFER_SIZE_MS)).toInt();
 
     // initialize device
-    reinitialize(mFormat.sampleRate(), mFormat.channelCount(), mDeviceInfo, bufferSize);
+    reinitialize(mFormat.sampleRate(), mFormat.channelCount(), mDevice, bufferSize);
 }
 
 const std::string AudioInterfaceForQt::getDeviceName() const
 {
-    return mDeviceInfo.deviceName().toStdString();
+    return mDevice.description().toStdString();
 }
 
 int AudioInterfaceForQt::getSamplingRate() const

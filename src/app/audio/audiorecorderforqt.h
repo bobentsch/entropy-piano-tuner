@@ -20,7 +20,7 @@
 #ifndef AUDIORECORDERFORQT_H
 #define AUDIORECORDERFORQT_H
 
-#include <QAudioInput>
+#include <QAudioSource>
 #include <QTimer>
 
 #include "config/prerequisites.h"
@@ -49,7 +49,7 @@ protected:
    virtual QAudio::Error createDevice(const QAudioFormat &format, const QAudioDevice &info, int bufferSizeMS) override final;
 
 private:
-    QAudioInput *mAudioInput;
+    QAudioSource *mAudioInput;
     QTimer mReadTimer;
 };
 

@@ -20,7 +20,7 @@
 #ifndef AUDIOPLAYERFORQT_H
 #define AUDIOPLAYERFORQT_H
 
-#include <QAudioOutput>
+#include <QAudioSink>
 
 #include "config/prerequisites.h"
 
@@ -65,7 +65,7 @@ private slots:
     void stateChanged(QAudio::State state);
 
 private:
-    QAudioOutput *mAudioSink;           ///< Audio sink to which the data is sent
+    QAudioSink *mAudioSink;           ///< Audio sink to which the data is sent
 };
 
 #endif // AUDIOPLAYERFORQT_H

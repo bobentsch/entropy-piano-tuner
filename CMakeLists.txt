@@ -41,5 +41,5 @@ if(CCACHE_FOUND)
 endif()
 
 
-add_subdirectory(docs)
+# add_subdirectory(docs)
 add_subdirectory(src)
